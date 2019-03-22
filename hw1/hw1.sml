@@ -67,3 +67,47 @@ fun date_to_string(date: int * int * int) =
   in 
     month_str ^ day_str ^ con_str ^ year_str
   end
+
+(*Assignment problem 8*)
+fun number_before_reaching_sum(sum: int, l: int list) = 
+  if sum - hd l > 0
+  then number_before_reaching_sum(sum - hd l, tl l) + 1
+  else 0
+
+(*Assignment problem 9*)
+fun what_month(day: int) = 
+  let 
+    val months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  in
+    number_before_reaching_sum(day, months) + 1
+  end
+
+(*Assignment problem 10*)
+fun month_range(day1: int, day2: int) = 
+  if day1 > day2
+  then []
+  else 
+    let 
+      val h = what_month(day1)
+      val t = month_range(day1 + 1, day2)
+    in
+      h :: t
+    end
+
+(*Assignment problem 11*)
+fun oldest(dates: (int * int * int) list) = 
+  if null dates 
+  then NONE
+  else
+    if null (tl dates)
+    then SOME (hd dates)
+    else (*Now the dates at list has two entries*)
+      let 
+        val h = hd dates
+        (*t cannot be none*)
+        val t = oldest(tl dates)
+      in 
+        if is_older(h, valOf t)
+        then SOME h
+        else t
+      end
