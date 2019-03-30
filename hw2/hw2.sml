@@ -64,4 +64,47 @@ datatype move = Discard of card | Draw
 
 exception IllegalMove
 
+(*Part a*)
+fun card_color (Spades, _) = Black
+    | card_color (Clubs, _) = Black
+    | card_color _ = Red
+
+(*Part b*)
+fun card_value (_, Jack) = 11
+    | card_value (_, Queen) = 12
+    | card_value (_, King) = 13
+    | card_value(_, Ace) = 1
+    | card_value(_, Num i) = i
+
+(*Part c*)
+fun remove_card (cs: card list, c: card, e) = 
+    case cs of 
+        [] => raise e
+      | x::xs' => if x = c 
+                  then xs'
+                  else x::remove_card(xs', c, e)
+
+(*Part d*)
+fun all_same_color(cs: card list) = 
+      case cs of
+        [] => true
+      | _::[] => true
+      | x::y::ys' => case (card_color(x), card_color(y)) of 
+                            (Black, Black) => all_same_color(y::ys')
+                          | (Red, Red) => all_same_color(y::ys')
+                          | _ => false
+
+(*Part e*)
+fun sum_cards(cs: card list) = 
+  let
+    fun tail_recur_helper(cs: card list, sum: int) = 
+      case cs of
+          [] => sum
+        | (_, Num i)::xs' => tail_recur_helper(xs', sum + i)
+  in
+    tail_recur_helper(cs, 0)
+  end
+
+(*Part f*)
+
 (* Problem 2 here *)
