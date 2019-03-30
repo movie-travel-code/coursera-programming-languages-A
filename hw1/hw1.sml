@@ -1,18 +1,20 @@
 (*Assignment problem 1*)
 fun is_older(first : int*int*int, second : int*int*int) = 
-  if #1 first < #1 second
-  then true (* Give a quick answer based on the year*)
-  else if #1 first > #1 second
-      then false
-  else if #2 first < #2 second
-      then true
-      else if #2 first > #2 second
-          then false
-      else if #3 first < #3 second
-          then true
-          else if #3 first = #3 second
-              then false (* if two dates have same year, month, day, then return false*)
-              else false
+  let
+    val days_map = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+    fun get_nth(index: int, months: int list) = 
+      if index = 1
+      then hd months
+      else get_nth(index - 1, tl months) 
+  in
+    let
+      fun days(year: int, month: int, day: int) = 
+        year * 365 + get_nth(month, days_map) + day
+    in
+      days first < days second
+    end
+  end
 
 (*Assignment problem 2*)
 fun number_in_month(dates : (int*int*int) list, month : int) = 
@@ -39,9 +41,13 @@ fun dates_in_month(dates : (int*int*int) list, month : int) =
   if null dates
   then []
   else
+  let 
+    val x = dates_in_month(tl dates, month)
+  in
     if #2 (hd dates) = month
-    then (hd dates) :: dates_in_month(tl dates, month)
-    else dates_in_month(tl dates, month)
+    then (hd dates) :: x
+    else x
+  end
 
 (*Assignment problem 5*)
 fun dates_in_months(dates : (int * int * int) list, months : int list) = 
@@ -69,9 +75,9 @@ fun date_to_string(date: int * int * int) =
   end
 
 (*Assignment problem 8*)
-fun number_before_reaching_sum(sum: int, l: int list) = 
-  if sum - hd l > 0
-  then number_before_reaching_sum(sum - hd l, tl l) + 1
+fun number_before_reaching_sum(sum: int, numbers: int list) = 
+  if sum - hd numbers > 0
+  then number_before_reaching_sum(sum - hd numbers, tl numbers) + 1
   else 0
 
 (*Assignment problem 9*)
