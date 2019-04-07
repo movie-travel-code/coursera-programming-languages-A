@@ -71,11 +71,9 @@ fun card_color (Spades, _) = Black
     | card_color _ = Red
 
 (*Part b*)
-fun card_value (_, Jack) = 10
-    | card_value (_, Queen) = 10
-    | card_value (_, King) = 10
-    | card_value(_, Ace) = 11
-    | card_value(_, Num i) = i
+fun card_value (_, Ace) = 11
+    | card_value (_, Num i) = i
+    | card_value _ = 10 
 
 (*Part c*)
 fun remove_card (cs: card list, c: card, e) = 
@@ -121,6 +119,7 @@ fun score(cs: card list, goal: int) =
           else goal - sum
   end
 
+(*part g*)
 fun officiate(cs: card list, ml: move list, goal: int) = 
   let
     fun tail_recur_helper(cs: card list, ml: move list, goal: int, hc: card list) = 
@@ -199,7 +198,7 @@ fun discard_and_draw(cs: card list, goal: int, c: card, ml: move list) =
     fun helper(cs_help: card list, cs: card list, c: card, ml: move list) = 
       case cs_help of 
           [] => NONE
-        | x::xs' => if officiate(cs@[c], ml@[Discard(x)]@[Draw], goal) = 0
+        | x::xs' => if officiate(cs@[c], ml@[Discard x, Draw], goal) = 0
                     then SOME x
                     else helper(xs', cs, c, ml)
   in
@@ -218,14 +217,14 @@ fun careful_player(cs: card list, goal: int) =
                           then
                               case discard_and_draw(hc, goal, c, ml) of 
                                   NONE => helper(cs', goal, ml@[Draw], hc@[c], officiate(hc@[c], ml@[Draw], goal))
-                                | SOME x => ml@[Discard x]@[Draw]
+                                | SOME x => ml@[Discard x, Draw]
                           else
                                 if goal - sum_cards(hc) > 10
                                 then helper(cs', goal, ml@[Draw], hc@[c], officiate(hc@[c], ml@[Draw], goal))
                                 else 
                                   case discard_and_draw(hc, goal, c, ml) of 
                                       NONE => helper(cs', goal, ml@[Draw], hc@[c], officiate(hc@[c], ml@[Draw], goal))
-                                    | SOME x => ml@[Discard x]@[Draw]
+                                    | SOME x => ml@[Discard x, Draw]
   in
     helper(cs, goal, [], [], officiate([], [], goal))
   end
