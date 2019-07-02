@@ -16,7 +16,7 @@ fun all_except_option(str: string, l: string list) =
                 else
                   case all_except_option(str, xs') of
                     NONE => NONE
-                  | SOME res => SOME ([x] @ res)
+                  | SOME res => SOME (x::res)
 
 (*Part b*)
 fun get_substitutions1(ss: string list list, s: string) = 
@@ -29,14 +29,14 @@ fun get_substitutions1(ss: string list list, s: string) =
 (*Part c*)
 fun get_substitutions2(ss: string list list, s: string) =
   let
-    fun tail_recur_helper(ss: string list list, s: string, answ: string list) = 
+    fun tail_recur_helper(ss: string list list, answ: string list) = 
       case ss of 
           [] => answ
         | x::xs' => case all_except_option(s, x) of
-                        NONE => tail_recur_helper(xs', s, answ)
-                      | SOME res => tail_recur_helper(xs' , s, answ @ res)
+                        NONE => tail_recur_helper(xs', answ)
+                      | SOME res => tail_recur_helper(xs' , answ @ res)
   in
-    tail_recur_helper(ss, s, [])
+    tail_recur_helper(ss, [])
   end
 
 (*Part d*)
