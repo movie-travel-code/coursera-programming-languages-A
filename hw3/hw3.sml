@@ -75,22 +75,16 @@ fun first_answer f l =
 (*Function 8*)
 fun all_answers f l =
 	let 
-		fun tail_recur_helper f l res =
-			case l of
-					[] => (case res of 
-										[] => NONE
-									| ans => SOME ans)
+		fun tail_recur_helper f l =
+			case l of 
+					[] => SOME []
 				| x::xs' => case f(x) of 
 												NONE => NONE
-											| SOME v => let
-																		val ans = tail_recur_helper f xs' res
-																	in
-																		case ans of 
-																				NONE => NONE
-																			| SOME ans => SOME (v @ ans)
-																	end
+											| SOME v => case (tail_recur_helper f xs') of 
+																			NONE => NONE 
+																		| SOME l => SOME (v @ l)
 	in
-		tail_recur_helper f l []
+		tail_recur_helper f l
 	end
 
 (*Function 9(a)*)
@@ -128,7 +122,6 @@ fun match(v: valu, p: pattern) =
 			(Wildcard, _) => SOME []
 		| (Variable x, v') => SOME [(x, v')]
 		| (UnitP, Unit) => SOME []
-		| (UnitP, _) => NONE
 		| (ConstP x, Const y) => if x = y then SOME [] else NONE
 		| (TupleP l, Tuple v') => if List.length(l) <> List.length(v')
 														 then NONE
@@ -136,8 +129,9 @@ fun match(v: valu, p: pattern) =
 		| (ConstructorP(s1,p'), Constructor(s2, v')) => if s1 = s2 
 																									 	then match(v', p')
 																										else NONE
+		| (_, _) => NONE
 
 (*Function 12*)
 fun curry f x y = f (x, y)
-fun first_match v l = 
+fun first_match(v: valu, l: pattern list) = 
 	SOME (first_answer (curry match v) l) handle NoAnswer => NONE
