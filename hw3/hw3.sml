@@ -42,23 +42,24 @@ fun only_capitals(l: string list) =
 
 (*Function 2*)
 fun longest_string1(l: string list) =
-	List.foldl(fn (x, y) => if String.size(y) < String.size(x) then x else y) "" l
+	List.foldl (fn (x, y) => if String.size(y) < String.size(x) then x else y) "" l
 
 (*Function 3*)
 fun longest_string2(l: string list) = 
-	List.foldl(fn (x, y) => if String.size(y) <= String.size(x) then x else y) "" l
+	List.foldl (fn (x, y) => if String.size(y) <= String.size(x) then x else y) "" l
 
 (*Functions 4*)
-val longest_string_helper = fn x => fn y => fn z => List.foldl(x) y z
-fun longest_string3(l) = 
-	((longest_string_helper(fn (x,y) => if String.size(y) < String.size(x) then x else y)) "") l
-fun longest_string4(l) = 
-	((longest_string_helper(fn (x,y) => if String.size(y) <= String.size(x) then x else y)) "") l
+fun longest_string_helper f l = 
+	List.foldl (fn (x,y) => if f(String.size x, String.size y) then x else y) "" l
+val longest_string3 = 
+	longest_string_helper (fn (x,y) => x > y)
+val longest_string4 = 
+	longest_string_helper (fn (x,y) => x >= y)
 
 (*Functions 5*)
-val candidate = Char.isUpper o String.sub
+fun candidate(l) = List.filter (fn x => Char.isUpper(String.sub(x, 0))) l
 fun longest_capitalized(l: string list) = 
-	((longest_string_helper(fn (x, y) => if String.size(y) < String.size(x) andalso candidate(x, 0) then x else y)) "") l
+	longest_string3 o candidate
 
 (*Function 6*)
 fun rev_string(s: string) = 
