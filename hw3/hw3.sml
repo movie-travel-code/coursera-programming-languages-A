@@ -58,12 +58,10 @@ val longest_string4 =
 
 (*Functions 5*)
 fun candidate(l) = List.filter (fn x => Char.isUpper(String.sub(x, 0))) l
-fun longest_capitalized(l: string list) = 
-	longest_string3 o candidate
+val longest_capitalized = longest_string3 o candidate
 
 (*Function 6*)
-fun rev_string(s: string) = 
-	(String.implode o List.rev o String.explode) s
+val rev_string = String.implode o List.rev o String.explode
 
 (*Function 7*)
 fun first_answer f l = 
@@ -75,24 +73,19 @@ fun first_answer f l =
 
 (*Function 8*)
 fun all_answers f l =
-	let 
-		fun tail_recur_helper f l =
-			case l of 
-					[] => SOME []
-				| x::xs' => case f(x) of 
-												NONE => NONE
-											| SOME v => case (tail_recur_helper f xs') of 
-																			NONE => NONE 
-																		| SOME l => SOME (v @ l)
-	in
-		tail_recur_helper f l
-	end
+	case l of 
+			[] => SOME []
+		| x::xs' => case f(x) of 
+										NONE => NONE
+									| SOME v => case (all_answers f xs') of 
+																	NONE => NONE 
+																| SOME l => SOME (v @ l)
 
 (*Function 9(a)*)
 val count_wildcards = g (fn () => 1) (fn x => 0)
 
 (*Function 9(b)*)
-val count_wild_and_variable_lengths = g (fn () => 1) (fn x => String.size(x))
+val count_wild_and_variable_lengths = g (fn () => 1) String.size
 
 (*Function 9(c)*)
 fun count_some_var(s: string, p: pattern) = 
@@ -110,7 +103,7 @@ fun check_pat p =
 		fun check_repeats l = 
 			case l of 
 					[] => true
-				| x::xs' => if (List.exists (fn y => if x = y then true else false) xs')
+				| x::xs' => if (List.exists (fn y => x = y) xs')
 											then false
 											else check_repeats(xs')
 	in
@@ -126,11 +119,11 @@ fun match(v: valu, p: pattern) =
 		| (ConstP x, Const y) => if x = y then SOME [] else NONE
 		| (TupleP l, Tuple v') => if List.length(l) <> List.length(v')
 														 then NONE
-														 else let val zipl = ListPair.zip(v', l) in (all_answers match) zipl end
+														 else all_answers match (ListPair.zip(v', l))
 		| (ConstructorP(s1,p'), Constructor(s2, v')) => if s1 = s2 
 																									 	then match(v', p')
 																										else NONE
-		| (_, _) => NONE
+		| _ => NONE
 
 (*Function 12*)
 fun curry f x y = f (x, y)
