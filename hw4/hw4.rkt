@@ -28,15 +28,9 @@
 
 ; Problem 5
 (define funny-number-stream
-  (lambda ()
-    (letrec ([nested-stream
-              (lambda (x)
-                (cons
-                 (if (= (remainder x 5) 0)
-                     (- 0 x)
-                     x)
-                 (lambda () (nested-stream (+ x 1)))))])
-      (nested-stream 1))))
+    (letrec ([nested-stream (lambda (x) (cons (if (= (remainder x 5) 0) (- x) x)
+                                         (lambda () (nested-stream (+ x 1)))))])
+      (lambda() (nested-stream 1))))
 
 ; Problem 6
 (define dan-then-dog
@@ -58,28 +52,26 @@
 
 ; Problem 9
 (define (vector-assoc v vec)
-  (letrec ([helper (lambda (v vec n)
+  (letrec ([helper (lambda (n)
                      (if (< n (vector-length vec))
-                         (if (pair? (vector-ref vec n))
-                             (if (= v (car (vector-ref vec n)))
-                                 (vector-ref vec n)
-                                 (helper v vec (+ n 1)))
-                             (helper v vec (+ n 1)))
+                         (let ([tmp (vector-ref vec n)])
+                          (if (and (pair? tmp) (equal? v (car tmp)))
+                              tmp
+                              (helper (+ n 1))))
                          #f))])
-    (helper v vec 0)))
+    (helper 0)))
 
 ; Problem 10
 (define (cached-assoc xs n)
   (letrec ([memo (make-vector n #f)]
-           [indicator 0]
-           [helper (lambda (v)
-                     (let ([answer (vector-assoc v memo)])
-                       (if answer
-                           (let ([new-answer (assoc v xs)])
-                             (if new-answer
-                                 (begin (vector-set! memo indicator new-answer)
-                                        (set! indicator (remainder (+ indicator 1) n))
-                                        new-answer)
-                                 new-answer))
-                           answer)))])
-    helper))
+           [indicator 0])
+    (lambda (v)
+      (let ([answer (vector-assoc v memo)])
+        (if answer
+            answer ; Use the cached value
+            (let ([new-answer (assoc v xs)]) ; find the new answer and update the cache
+              (if new-answer
+                  (begin (vector-set! memo indicator new-answer)
+                         (set! indicator (remainder (+ indicator 1) n))
+                         new-answer)
+                  new-answer)))))))
