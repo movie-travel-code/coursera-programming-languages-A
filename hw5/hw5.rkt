@@ -119,16 +119,18 @@
 
 ;; Problem 3
 
-(define (ifaunit e1 e2 e3)
-  (if (aunit? e1) e2 e3))
+(define (ifaunit e1 e2 e3) (ifgreater (isaunit e1) (int 0) e2 e3))
 
 (define (mlet* lstlst e2)
-  (call (closure lstlst (fun #f (aunit) e2)) (aunit)))
+  (if (null? lstlst)
+      e2
+      (mlet (car (car lstlst)) (cdr (car lstlst))
+            (mlet* (cdr lstlst) e2))))
 
 (define (ifeq e1 e2 e3 e4)
-  (call (closure (list (cons "_x" e1))
-                 (fun #f "_y" (ifgreater (var "_x") (var "_y") e4 (ifgreater (var "_y") (var "_x") e4 e3))))
-        e2))
+  (mlet "_x" e1
+        (mlet "_y" e2
+              (ifgreater (var "_x") (var "_y") e4 (ifgreater (var "_y") (var "_x") e4 e3)))))
 
 ;; Problem 4
 (define mupl-map
